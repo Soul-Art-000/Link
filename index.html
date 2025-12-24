@@ -28,6 +28,8 @@
             text-align: center;
             max-width: 400px;
             width: 90%;
+            z-index: 10; /* Üstte görünsün */
+            position: relative;
         }
 
         h2 {
@@ -43,9 +45,8 @@
             margin-bottom: 25px;
         }
 
-        /* Sıkıcı, Standart Buton */
         .verify-btn {
-            background-color: #2da44e; /* GitHub/Google Yeşili */
+            background-color: #2da44e;
             color: white;
             border: 1px solid rgba(27,31,35,0.15);
             padding: 12px 24px;
@@ -57,9 +58,7 @@
             transition: 0.2s;
         }
 
-        .verify-btn:hover {
-            background-color: #2c974b;
-        }
+        .verify-btn:hover { background-color: #2c974b; }
 
         .loader {
             border: 3px solid #f3f3f3;
@@ -75,7 +74,7 @@
 
         /* 2. KORKU EKRANI (Gizli) */
         #scare-screen {
-            display: none;
+            display: none; /* JS ile açılacak */
             position: fixed;
             top: 0;
             left: 0;
@@ -92,9 +91,23 @@
             height: 100%;
             object-fit: cover;
         }
+        
+        /* PRELOAD HİLESİ: 
+           Resmi sayfa açıldığında görünmez bir şekilde yükle.
+           Böylece butona basınca bekleme yapmaz.
+        */
+        #preload-hidden {
+            position: absolute;
+            width: 1px;
+            height: 1px;
+            opacity: 0;
+            pointer-events: none;
+        }
     </style>
 </head>
 <body>
+
+    <img src="scare.jpg" id="preload-hidden">
 
     <div id="innocent-screen">
         <div class="loader"></div>
@@ -105,7 +118,7 @@
     </div>
 
     <div id="scare-screen">
-        <img id="scare-img" src="https://cdn.pixabay.com/photo/2020/03/29/16/39/skull-4981375_1280.jpg">
+        <img id="scare-img" src="scare.jpg">
     </div>
 
     <audio id="screamSound">
