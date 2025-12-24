@@ -3,84 +3,54 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Güvenlik Kontrolü | Yönlendiriliyor...</title>
+    <title>Güvenlik Doğrulaması</title>
     <style>
         body {
-            background-color: #fcfcfc;
-            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+            background-color: #f8f9fa;
+            font-family: -apple-system, system-ui, BlinkMacSystemFont, "Segoe UI", Roboto;
             display: flex;
-            flex-direction: column;
             align-items: center;
             justify-content: center;
             height: 100vh;
             margin: 0;
-            color: #333;
             overflow: hidden;
         }
 
-        /* 1. SAKİN GÜVENLİK EKRANI */
-        #innocent-screen {
+        /* SAKİN GİRİŞ PANELİ */
+        #verification-box {
             background: white;
-            padding: 40px;
-            border: 1px solid #e0e0e0;
-            border-radius: 8px;
-            box-shadow: 0 4px 12px rgba(0,0,0,0.05);
+            padding: 30px;
+            border-radius: 12px;
+            box-shadow: 0 8px 24px rgba(0,0,0,0.1);
             text-align: center;
-            max-width: 400px;
-            width: 90%;
-            z-index: 10; /* Üstte görünsün */
-            position: relative;
+            max-width: 350px;
+            border: 1px solid #eee;
         }
 
-        h2 {
-            font-size: 20px;
-            margin-bottom: 10px;
-            font-weight: 500;
-            color: #333;
-        }
+        h2 { font-size: 18px; color: #222; margin-bottom: 8px; }
+        p { font-size: 14px; color: #666; margin-bottom: 24px; }
 
-        p {
-            font-size: 14px;
-            color: #666;
-            margin-bottom: 25px;
-        }
-
-        .verify-btn {
-            background-color: #2da44e;
+        .btn-verify {
+            background-color: #007bff;
             color: white;
-            border: 1px solid rgba(27,31,35,0.15);
-            padding: 12px 24px;
-            font-size: 14px;
+            border: none;
+            padding: 12px 20px;
+            font-size: 15px;
             font-weight: 600;
             border-radius: 6px;
             cursor: pointer;
             width: 100%;
-            transition: 0.2s;
+            transition: background 0.2s;
         }
+        .btn-verify:hover { background-color: #0056b3; }
 
-        .verify-btn:hover { background-color: #2c974b; }
-
-        .loader {
-            border: 3px solid #f3f3f3;
-            border-top: 3px solid #3498db;
-            border-radius: 50%;
-            width: 20px;
-            height: 20px;
-            animation: spin 1s linear infinite;
-            margin: 0 auto 15px auto;
-        }
-
-        @keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
-
-        /* 2. KORKU EKRANI (Gizli) */
-        #scare-screen {
-            display: none; /* JS ile açılacak */
+        /* KORKU EKRANI (BAŞTA GİZLİ) */
+        #scare-overlay {
+            display: none;
             position: fixed;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            background-color: black;
+            top: 0; left: 0;
+            width: 100%; height: 100%;
+            background: black;
             z-index: 9999;
             align-items: center;
             justify-content: center;
@@ -91,60 +61,45 @@
             height: 100%;
             object-fit: cover;
         }
-        
-        /* PRELOAD HİLESİ: 
-           Resmi sayfa açıldığında görünmez bir şekilde yükle.
-           Böylece butona basınca bekleme yapmaz.
-        */
-        #preload-hidden {
-            position: absolute;
-            width: 1px;
-            height: 1px;
-            opacity: 0;
-            pointer-events: none;
-        }
     </style>
 </head>
 <body>
 
-    <img src="scare.jpg" id="preload-hidden">
-
-    <div id="innocent-screen">
-        <div class="loader"></div>
-        <h2>Bağlantı Güvenliği Kontrolü</h2>
-        <p>Siteye erişim sağlamak için lütfen insan olduğunuzu doğrulayın.</p>
-        
-        <button class="verify-btn" onclick="startScream()">Doğrula ve Devam Et</button>
+    <div id="verification-box">
+        <h2>Güvenlik Kontrolü</h2>
+        <p>Devam etmek için aşağıdaki butona tıklayarak insan olduğunuzu doğrulayın.</p>
+        <button class="btn-verify" onclick="launchScare()">Doğrula</button>
     </div>
 
-    <div id="scare-screen">
+    <div id="scare-overlay">
         <img id="scare-img" src="scare.jpg">
     </div>
 
-    <audio id="screamSound">
+    <audio id="screamAudio">
         <source src="scream.mp3" type="audio/mpeg">
     </audio>
 
     <script>
-        function startScream() {
-            var innocent = document.getElementById('innocent-screen');
-            var scare = document.getElementById('scare-screen');
-            var audio = document.getElementById('screamSound');
+        function launchScare() {
+            const overlay = document.getElementById('scare-overlay');
+            const audio = document.getElementById('screamAudio');
+            const box = document.getElementById('verification-box');
 
-            // 1. Ekranları değiştir
-            innocent.style.display = 'none';
-            scare.style.display = 'flex';
+            // 1. Arayüzü Değiştir
+            box.style.display = 'none';
+            overlay.style.display = 'flex';
 
-            // 2. Sesi oynat
+            // 2. Sesi Çal (Kullanıcı tıkladığı için tarayıcı engellemez)
             audio.volume = 1.0; 
             audio.play();
 
-            // 3. Tam Ekran
+            // 3. Tam Ekran Moduna Geç
             if (document.documentElement.requestFullscreen) {
                 document.documentElement.requestFullscreen();
+            } else if (document.documentElement.webkitRequestFullscreen) {
+                document.documentElement.webkitRequestFullscreen();
             }
         }
     </script>
-
 </body>
 </html>
