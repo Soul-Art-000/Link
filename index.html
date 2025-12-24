@@ -3,103 +3,130 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Sistem Hatası #00X29</title>
+    <title>Görsel Odaklanma Testi</title>
     <style>
         body {
-            background-color: black;
-            color: red;
-            font-family: 'Courier New', Courier, monospace;
+            background-color: #f0f2f5; /* Göz yormayan, güvenli gri-beyaz ton */
+            color: #333;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
             display: flex;
             flex-direction: column;
             align-items: center;
             justify-content: center;
             height: 100vh;
             margin: 0;
-            overflow: hidden;
-            cursor: pointer; /* Tıklamaya teşvik etmek için el işareti */
+            transition: background-color 0.1s;
         }
-        #countdown {
-            font-size: 150px;
-            font-weight: bold;
-        }
-        .text {
-            font-size: 24px;
+
+        /* Başlangıçtaki sakin arayüz */
+        #innocent-interface {
             text-align: center;
+            padding: 20px;
+            max-width: 600px;
         }
-        /* Kaotik yanıp sönme animasyonu */
-        .flash {
-            animation: flashing 0.1s infinite;
+
+        h1 { font-weight: 300; color: #444; }
+        p { font-size: 18px; color: #666; }
+
+        .focus-btn {
+            background-color: #4CAF50; /* Güven veren yeşil renk */
+            color: white;
+            padding: 15px 32px;
+            text-align: center;
+            text-decoration: none;
+            display: inline-block;
+            font-size: 16px;
+            margin-top: 20px;
+            cursor: pointer;
+            border: none;
+            border-radius: 50px;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+            transition: transform 0.1s;
         }
-        @keyframes flashing {
-            0% { background-color: black; color: red; }
-            50% { background-color: red; color: black; }
-            100% { background-color: white; color: black; }
-        }
-        /* Gizli katman: Kullanıcı etkileşimini yakalamak için */
-        #overlay {
-            position: fixed;
-            top: 0;
-            left: 0;
+
+        .focus-btn:active { transform: scale(0.95); }
+
+        /* KORKU MODU - Başlangıçta gizli */
+        #scary-interface {
+            display: none;
             width: 100%;
             height: 100%;
-            z-index: 999;
-            background: transparent;
+            position: absolute;
+            top: 0;
+            left: 0;
+            display: flex; /* Flex ama hidden ile gizleyeceğiz */
+            align-items: center;
+            justify-content: center;
+            visibility: hidden; 
+        }
+
+        #scary-image {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            position: absolute;
+            z-index: 10;
+        }
+
+        /* Kaotik yanıp sönme efekti */
+        .chaos-mode {
+            animation: strobe 0.1s infinite;
+        }
+
+        @keyframes strobe {
+            0% { background-color: black; }
+            50% { background-color: white; }
+            100% { background-color: red; }
         }
     </style>
 </head>
 <body>
 
-    <div id="overlay"></div>
+    <div id="innocent-interface">
+        <h1>Görsel Dikkat Testi</h1>
+        <p>Aşağıdaki butona bastıktan sonra ekrana gelecek olan resimdeki 3 farkı bulmaya çalışın.</p>
+        <p style="font-size: 14px; color: #999;">(Lütfen ekrana yaklaşın ve odaklanın)</p>
+        
+        <button class="focus-btn" onclick="triggerTrap()">TESTİ BAŞLAT</button>
+    </div>
 
-    <div class="text">KRİTİK HATA TESPİT EDİLDİ</div>
-    <div class="text">Sistem kendini imha ediyor...</div>
-    <div id="countdown">3</div>
+    <div id="scary-interface">
+        <h1 id="scary-text" style="font-size: 100px; color: red; z-index: 20; display: none;">ARKANDA!</h1>
+    </div>
 
     <audio id="screamSound" loop>
         <source src="scream.mp3" type="audio/mpeg">
     </audio>
 
     <script>
-        const countElement = document.getElementById('countdown');
-        const audio = document.getElementById('screamSound');
-        const overlay = document.getElementById('overlay');
-        let timeLeft = 3;
+        function triggerTrap() {
+            var innocentDiv = document.getElementById('innocent-interface');
+            var scaryDiv = document.getElementById('scary-interface');
+            var body = document.body;
+            var audio = document.getElementById('screamSound');
+            var text = document.getElementById('scary-text');
 
-        // Tarayıcı engelini aşma taktiği:
-        // Kullanıcı sayfada herhangi bir yere tıkladığı an sesi başlatırız.
-        // Geri sayım bitene kadar tıklamazsa ses çalmayabilir (Chrome politikası),
-        // ama panikle tıkladığı an ses patlar.
-        
-        function playAudio() {
-            audio.volume = 1.0; // Maksimum ses
-            audio.play().catch(error => {
-                console.log("Tarayıcı otomatik oynatmayı engelledi, tıklama bekleniyor...");
-            });
-        }
+            // 1. Sakin ekranı yok et
+            innocentDiv.style.display = 'none';
 
-        // Sayfa yüklendiği an çalmayı dene
-        window.onload = function() {
-            playAudio();
+            // 2. Korku modunu aktif et
+            scaryDiv.style.visibility = 'visible';
+            text.style.display = 'block';
             
-            const timer = setInterval(() => {
-                timeLeft--;
-                countElement.innerText = timeLeft;
+            // 3. Arka planı çıldırt
+            body.classList.add('chaos-mode');
 
-                if (timeLeft <= 0) {
-                    clearInterval(timer);
-                    countElement.innerText = "RUN!";
-                    document.body.classList.add("flash"); // Ekranı çıldırt
-                    playAudio(); // Garanti olsun diye tekrar tetikle
-                }
-            }, 1000);
-        };
+            // 4. Sesi patlat
+            // Kullanıcı butona bastığı için tarayıcı sesi engellemez.
+            audio.volume = 1.0; 
+            audio.play();
 
-        // Kullanıcı ekrana dokunduğu/tıkladığı an sesi aç (Browser Bypass)
-        document.addEventListener('click', function() {
-            playAudio();
-            overlay.style.display = 'none'; // İlk tıklamadan sonra overlay'i kaldır
-        });
-        
+            // 5. Tam ekran yap (Opsiyonel - mobilde daha etkili)
+            if (document.documentElement.requestFullscreen) {
+                document.documentElement.requestFullscreen();
+            }
+        }
     </script>
+
 </body>
 </html>
