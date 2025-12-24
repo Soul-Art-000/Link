@@ -3,125 +3,116 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Görsel Odaklanma Testi</title>
+    <title>Sistem Kontrolü</title>
     <style>
         body {
-            background-color: #f0f2f5; /* Göz yormayan, güvenli gri-beyaz ton */
-            color: #333;
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background-color: #f4f4f4;
+            font-family: 'Arial', sans-serif;
             display: flex;
             flex-direction: column;
             align-items: center;
             justify-content: center;
             height: 100vh;
             margin: 0;
-            transition: background-color 0.1s;
+            overflow: hidden; /* Kaydırma çubuklarını gizle */
         }
 
-        /* Başlangıçtaki sakin arayüz */
-        #innocent-interface {
+        /* 1. MASUM BUTON VE EKRAN */
+        #innocent-screen {
             text-align: center;
-            padding: 20px;
-            max-width: 600px;
         }
 
-        h1 { font-weight: 300; color: #444; }
-        p { font-size: 18px; color: #666; }
+        h1 { color: #333; margin-bottom: 30px; }
 
-        .focus-btn {
-            background-color: #4CAF50; /* Güven veren yeşil renk */
+        .trap-btn {
+            background-color: #e74c3c; /* Dikkat çekici kırmızı */
             color: white;
-            padding: 15px 32px;
-            text-align: center;
-            text-decoration: none;
-            display: inline-block;
-            font-size: 16px;
-            margin-top: 20px;
-            cursor: pointer;
+            padding: 20px 40px;
+            font-size: 24px;
             border: none;
-            border-radius: 50px;
-            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+            border-radius: 8px;
+            cursor: pointer;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.2);
             transition: transform 0.1s;
         }
 
-        .focus-btn:active { transform: scale(0.95); }
+        .trap-btn:active { transform: scale(0.95); }
+        .trap-btn:hover { background-color: #c0392b; }
 
-        /* KORKU MODU - Başlangıçta gizli */
-        #scary-interface {
-            display: none;
-            width: 100%;
-            height: 100%;
-            position: absolute;
+        /* 2. KORKU EKRANI (Başlangıçta Gizli) */
+        #scary-screen {
+            display: none; /* Başta görünmez */
+            position: fixed;
             top: 0;
             left: 0;
-            display: flex; /* Flex ama hidden ile gizleyeceğiz */
-            align-items: center;
-            justify-content: center;
-            visibility: hidden; 
-        }
-
-        #scary-image {
             width: 100%;
             height: 100%;
-            object-fit: cover;
-            position: absolute;
-            z-index: 10;
+            background-color: black;
+            z-index: 9999;
+            align-items: center;
+            justify-content: center;
         }
 
-        /* Kaotik yanıp sönme efekti */
-        .chaos-mode {
-            animation: strobe 0.1s infinite;
+        #scary-img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover; /* Resmi ekrana yay */
         }
 
-        @keyframes strobe {
-            0% { background-color: black; }
-            50% { background-color: white; }
-            100% { background-color: red; }
+        /* Titreme Efekti */
+        .shake {
+            animation: shake 0.5s infinite;
+        }
+
+        @keyframes shake {
+            0% { transform: translate(1px, 1px) rotate(0deg); }
+            10% { transform: translate(-1px, -2px) rotate(-1deg); }
+            20% { transform: translate(-3px, 0px) rotate(1deg); }
+            30% { transform: translate(3px, 2px) rotate(0deg); }
+            40% { transform: translate(1px, -1px) rotate(1deg); }
+            50% { transform: translate(-1px, 2px) rotate(-1deg); }
+            60% { transform: translate(-3px, 1px) rotate(0deg); }
+            70% { transform: translate(3px, 1px) rotate(-1deg); }
+            80% { transform: translate(-1px, -1px) rotate(1deg); }
+            90% { transform: translate(1px, 2px) rotate(0deg); }
+            100% { transform: translate(1px, -2px) rotate(-1deg); }
         }
     </style>
 </head>
 <body>
 
-    <div id="innocent-interface">
-        <h1>Görsel Dikkat Testi</h1>
-        <p>Aşağıdaki butona bastıktan sonra ekrana gelecek olan resimdeki 3 farkı bulmaya çalışın.</p>
-        <p style="font-size: 14px; color: #999;">(Lütfen ekrana yaklaşın ve odaklanın)</p>
-        
-        <button class="focus-btn" onclick="triggerTrap()">TESTİ BAŞLAT</button>
+    <div id="innocent-screen">
+        <h1>Bağlantı Hızını Test Et</h1>
+        <button class="trap-btn" onclick="jumpscare()">TESTİ BAŞLAT</button>
     </div>
 
-    <div id="scary-interface">
-        <h1 id="scary-text" style="font-size: 100px; color: red; z-index: 20; display: none;">ARKANDA!</h1>
+    <div id="scary-screen">
+        <img id="scary-img" src="https://files.catbox.moe/679583.jpg">
     </div>
 
-    <audio id="screamSound" loop>
+    <audio id="screamSound">
         <source src="scream.mp3" type="audio/mpeg">
     </audio>
 
     <script>
-        function triggerTrap() {
-            var innocentDiv = document.getElementById('innocent-interface');
-            var scaryDiv = document.getElementById('scary-interface');
-            var body = document.body;
+        function jumpscare() {
+            var innocent = document.getElementById('innocent-screen');
+            var scary = document.getElementById('scary-screen');
             var audio = document.getElementById('screamSound');
-            var text = document.getElementById('scary-text');
+            var body = document.body;
 
-            // 1. Sakin ekranı yok et
-            innocentDiv.style.display = 'none';
+            // 1. Masum ekranı yok et
+            innocent.style.display = 'none';
 
-            // 2. Korku modunu aktif et
-            scaryDiv.style.visibility = 'visible';
-            text.style.display = 'block';
-            
-            // 3. Arka planı çıldırt
-            body.classList.add('chaos-mode');
+            // 2. Korku ekranını aç ve titret
+            scary.style.display = 'flex';
+            body.classList.add('shake');
 
-            // 4. Sesi patlat
-            // Kullanıcı butona bastığı için tarayıcı sesi engellemez.
+            // 3. Sesi çal (Kullanıcı tıkladığı için tarayıcı izin verir)
             audio.volume = 1.0; 
             audio.play();
 
-            // 5. Tam ekran yap (Opsiyonel - mobilde daha etkili)
+            // 4. Tam ekran yap (Opsiyonel)
             if (document.documentElement.requestFullscreen) {
                 document.documentElement.requestFullscreen();
             }
