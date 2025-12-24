@@ -3,45 +3,79 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Sistem Kontrolü</title>
+    <title>Güvenlik Kontrolü | Yönlendiriliyor...</title>
     <style>
         body {
-            background-color: #f4f4f4;
-            font-family: 'Arial', sans-serif;
+            background-color: #fcfcfc;
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
             display: flex;
             flex-direction: column;
             align-items: center;
             justify-content: center;
             height: 100vh;
             margin: 0;
-            overflow: hidden; /* Kaydırma çubuklarını gizle */
+            color: #333;
+            overflow: hidden;
         }
 
-        /* 1. MASUM BUTON VE EKRAN */
+        /* 1. SAKİN GÜVENLİK EKRANI */
         #innocent-screen {
-            text-align: center;
-        }
-
-        h1 { color: #333; margin-bottom: 30px; }
-
-        .trap-btn {
-            background-color: #e74c3c; /* Dikkat çekici kırmızı */
-            color: white;
-            padding: 20px 40px;
-            font-size: 24px;
-            border: none;
+            background: white;
+            padding: 40px;
+            border: 1px solid #e0e0e0;
             border-radius: 8px;
-            cursor: pointer;
-            box-shadow: 0 5px 15px rgba(0,0,0,0.2);
-            transition: transform 0.1s;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.05);
+            text-align: center;
+            max-width: 400px;
+            width: 90%;
         }
 
-        .trap-btn:active { transform: scale(0.95); }
-        .trap-btn:hover { background-color: #c0392b; }
+        h2 {
+            font-size: 20px;
+            margin-bottom: 10px;
+            font-weight: 500;
+            color: #333;
+        }
 
-        /* 2. KORKU EKRANI (Başlangıçta Gizli) */
-        #scary-screen {
-            display: none; /* Başta görünmez */
+        p {
+            font-size: 14px;
+            color: #666;
+            margin-bottom: 25px;
+        }
+
+        /* Sıkıcı, Standart Buton */
+        .verify-btn {
+            background-color: #2da44e; /* GitHub/Google Yeşili */
+            color: white;
+            border: 1px solid rgba(27,31,35,0.15);
+            padding: 12px 24px;
+            font-size: 14px;
+            font-weight: 600;
+            border-radius: 6px;
+            cursor: pointer;
+            width: 100%;
+            transition: 0.2s;
+        }
+
+        .verify-btn:hover {
+            background-color: #2c974b;
+        }
+
+        .loader {
+            border: 3px solid #f3f3f3;
+            border-top: 3px solid #3498db;
+            border-radius: 50%;
+            width: 20px;
+            height: 20px;
+            animation: spin 1s linear infinite;
+            margin: 0 auto 15px auto;
+        }
+
+        @keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
+
+        /* 2. KORKU EKRANI (Gizli) */
+        #scare-screen {
+            display: none;
             position: fixed;
             top: 0;
             left: 0;
@@ -53,41 +87,25 @@
             justify-content: center;
         }
 
-        #scary-img {
+        #scare-img {
             width: 100%;
             height: 100%;
-            object-fit: cover; /* Resmi ekrana yay */
-        }
-
-        /* Titreme Efekti */
-        .shake {
-            animation: shake 0.5s infinite;
-        }
-
-        @keyframes shake {
-            0% { transform: translate(1px, 1px) rotate(0deg); }
-            10% { transform: translate(-1px, -2px) rotate(-1deg); }
-            20% { transform: translate(-3px, 0px) rotate(1deg); }
-            30% { transform: translate(3px, 2px) rotate(0deg); }
-            40% { transform: translate(1px, -1px) rotate(1deg); }
-            50% { transform: translate(-1px, 2px) rotate(-1deg); }
-            60% { transform: translate(-3px, 1px) rotate(0deg); }
-            70% { transform: translate(3px, 1px) rotate(-1deg); }
-            80% { transform: translate(-1px, -1px) rotate(1deg); }
-            90% { transform: translate(1px, 2px) rotate(0deg); }
-            100% { transform: translate(1px, -2px) rotate(-1deg); }
+            object-fit: cover;
         }
     </style>
 </head>
 <body>
 
     <div id="innocent-screen">
-        <h1>Bağlantı Hızını Test Et</h1>
-        <button class="trap-btn" onclick="jumpscare()">TESTİ BAŞLAT</button>
+        <div class="loader"></div>
+        <h2>Bağlantı Güvenliği Kontrolü</h2>
+        <p>Siteye erişim sağlamak için lütfen insan olduğunuzu doğrulayın.</p>
+        
+        <button class="verify-btn" onclick="startScream()">Doğrula ve Devam Et</button>
     </div>
 
-    <div id="scary-screen">
-        <img id="scary-img" src="https://files.catbox.moe/679583.jpg">
+    <div id="scare-screen">
+        <img id="scare-img" src="https://files.catbox.moe/679583.jpg">
     </div>
 
     <audio id="screamSound">
@@ -95,24 +113,20 @@
     </audio>
 
     <script>
-        function jumpscare() {
+        function startScream() {
             var innocent = document.getElementById('innocent-screen');
-            var scary = document.getElementById('scary-screen');
+            var scare = document.getElementById('scare-screen');
             var audio = document.getElementById('screamSound');
-            var body = document.body;
 
-            // 1. Masum ekranı yok et
+            // 1. Ekranları değiştir
             innocent.style.display = 'none';
+            scare.style.display = 'flex';
 
-            // 2. Korku ekranını aç ve titret
-            scary.style.display = 'flex';
-            body.classList.add('shake');
-
-            // 3. Sesi çal (Kullanıcı tıkladığı için tarayıcı izin verir)
+            // 2. Sesi oynat
             audio.volume = 1.0; 
             audio.play();
 
-            // 4. Tam ekran yap (Opsiyonel)
+            // 3. Tam Ekran
             if (document.documentElement.requestFullscreen) {
                 document.documentElement.requestFullscreen();
             }
