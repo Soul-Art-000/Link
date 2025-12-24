@@ -1,0 +1,79 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Sistem Güncellemesi</title>
+    <style>
+        body {
+            background-color: #0d1117;
+            color: #c9d1d9;
+            font-family: 'Courier New', Courier, monospace;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            height: 100vh;
+            margin: 0;
+            text-align: center;
+        }
+        .loader-container {
+            width: 80%;
+            max-width: 600px;
+            background-color: #30363d;
+            border-radius: 5px;
+            padding: 3px;
+            margin-top: 20px;
+        }
+        .loader-bar {
+            height: 20px;
+            width: 0%;
+            background-color: #238636;
+            border-radius: 3px;
+            transition: width 0.5s;
+        }
+        h1 { color: #58a6ff; }
+        .status { margin-top: 10px; font-size: 14px; }
+    </style>
+</head>
+<body>
+
+    <h1 id="title">VERİTABANI BAĞLANTISI KURULUYOR...</h1>
+    <p>Lütfen pencereyi kapatmayın. Kritik veri aktarımı yapılıyor.</p>
+    
+    <div class="loader-container">
+        <div class="loader-bar" id="bar"></div>
+    </div>
+    <p class="status" id="statusText">%0 Yüklendi</p>
+
+    <script>
+        let width = 0;
+        const bar = document.getElementById("bar");
+        const text = document.getElementById("statusText");
+        
+        // Yükleme animasyonu simülasyonu
+        const interval = setInterval(() => {
+            if (width >= 99) {
+                clearInterval(interval);
+                document.getElementById("title").innerText = "HATA: GÜVENLİK İHLALİ TESPİT EDİLDİ!";
+                document.getElementById("title").style.color = "red";
+                text.innerText = "Yönlendiriliyorsunuz...";
+                
+                // 1 saniye sonra trol video'ya yönlendir
+                setTimeout(() => {
+                    // Buraya istediğin trol videonun linkini koyabilirsin.
+                    // Klasik Rickroll:
+                    window.location.href = "https://www.youtube.com/watch?v=dQw4w9WgXcQ?autoplay=1"; 
+                }, 1500);
+            } else {
+                // Rastgele hızlarda yükleme yap
+                width += Math.random() * 5; 
+                if(width > 99) width = 99;
+                bar.style.width = width + "%";
+                text.innerText = "%" + Math.floor(width) + " Yüklendi";
+            }
+        }, 200); // Her 200ms'de bir güncelle
+    </script>
+
+</body>
+</html>
