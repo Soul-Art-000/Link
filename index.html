@@ -1,105 +1,43 @@
 <!DOCTYPE html>
-<html lang="tr">
+<html>
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Güvenlik Doğrulaması</title>
+    <title>Soul Blackjack</title>
     <style>
-        body {
-            background-color: #f8f9fa;
-            font-family: -apple-system, system-ui, BlinkMacSystemFont, "Segoe UI", Roboto;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            height: 100vh;
-            margin: 0;
-            overflow: hidden;
-        }
-
-        /* SAKİN GİRİŞ PANELİ */
-        #verification-box {
-            background: white;
-            padding: 30px;
-            border-radius: 12px;
-            box-shadow: 0 8px 24px rgba(0,0,0,0.1);
-            text-align: center;
-            max-width: 350px;
-            border: 1px solid #eee;
-        }
-
-        h2 { font-size: 18px; color: #222; margin-bottom: 8px; }
-        p { font-size: 14px; color: #666; margin-bottom: 24px; }
-
-        .btn-verify {
-            background-color: #007bff;
-            color: white;
-            border: none;
-            padding: 12px 20px;
-            font-size: 15px;
-            font-weight: 600;
-            border-radius: 6px;
-            cursor: pointer;
-            width: 100%;
-            transition: background 0.2s;
-        }
-        .btn-verify:hover { background-color: #0056b3; }
-
-        /* KORKU EKRANI (BAŞTA GİZLİ) */
-        #scare-overlay {
-            display: none;
-            position: fixed;
-            top: 0; left: 0;
-            width: 100%; height: 100%;
-            background: black;
-            z-index: 9999;
-            align-items: center;
-            justify-content: center;
-        }
-
-        #scare-img {
-            width: 100%;
-            height: 100%;
-            object-fit: cover;
-        }
+        body { background: #1a1a1a; color: white; font-family: sans-serif; text-align: center; }
+        .card-area { border: 2px solid #444; padding: 20px; margin: 20px; border-radius: 10px; }
+        button { padding: 10px 20px; font-size: 18px; cursor: pointer; background: #e74c3c; color: white; border: none; }
     </style>
 </head>
 <body>
-
-    <div id="verification-box">
-        <h2>Güvenlik Kontrolü</h2>
-        <p>Devam etmek için aşağıdaki butona tıklayarak insan olduğunuzu doğrulayın.</p>
-        <button class="btn-verify" onclick="launchScare()">Doğrula</button>
+    <h1>Blackjack Online</h1>
+    <div class="card-area">
+        <h2 id="myScore">Skor: 0</h2>
+        <button onclick="draw()">KART ÇEK</button>
     </div>
+    <h3>Masa Durumu:</h3>
+    <div id="table"></div>
 
-    <div id="scare-overlay">
-        <img id="scare-img" src="scare.jpg">
-    </div>
-
-    <audio id="screamAudio">
-        <source src="scream.mp3" type="audio/mpeg">
-    </audio>
-
+    <script src="/socket.io/socket.io.js"></script>
     <script>
-        function launchScare() {
-            const overlay = document.getElementById('scare-overlay');
-            const audio = document.getElementById('screamAudio');
-            const box = document.getElementById('verification-box');
+        const socket = io();
+        const tableDiv = document.getElementById('table');
 
-            // 1. Arayüzü Değiştir
-            box.style.display = 'none';
-            overlay.style.display = 'flex';
-
-            // 2. Sesi Çal (Kullanıcı tıkladığı için tarayıcı engellemez)
-            audio.volume = 1.0; 
-            audio.play();
-
-            // 3. Tam Ekran Moduna Geç
-            if (document.documentElement.requestFullscreen) {
-                document.documentElement.requestFullscreen();
-            } else if (document.documentElement.webkitRequestFullscreen) {
-                document.documentElement.webkitRequestFullscreen();
-            }
+        function draw() {
+            socket.emit('draw');
         }
+
+        socket.on('result', (msg) => {
+            document.getElementById('myScore').innerText = msg;
+        });
+
+        socket.on('updateTable', (players) => {
+            tableDiv.innerHTML = "";
+            for (let id in players) {
+                const p = document.createElement('p');
+                p.innerText = `Oyuncu ${id.substring(0,4)}: ${players[id].score} Puan`;
+                tableDiv.appendChild(p);
+            }
+        });
     </script>
 </body>
 </html>
